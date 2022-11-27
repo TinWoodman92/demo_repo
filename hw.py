@@ -15,16 +15,14 @@ if chk_1:
 	cur.execute("CREATE TABLE sexy_tbl (chk INTEGER);")
 
 chk_2 = randint(0,1)
-
 cur.execute("INSERT INTO sexy_tbl (chk) VALUES(:chk);", {"chk" : chk_2})
 
-rst = []
 k = []
 res = cur.execute("SELECT sum(chk) as sum_chk, count(chk) as count_chk FROM sexy_tbl;")
 for desc in cur.description: k.append(desc[0])
-for row in res.fetchall(): rst.append(dict(zip(k,row)))
+row = res.fetchone()
+rcd = dict(zip(k,row))
 
-rcd = rst[0]
 chk_3 = (rcd["sum_chk"]/rcd["count_chk"]) > 0.5
 
 if chk_3:
@@ -36,6 +34,7 @@ diag = input()
 
 if 'sexy' in diag.lower():
 	print(f"Your sexy score is {rcd['sum_chk']} out of {rcd['count_chk']}.")
+	input()
 
 con.commit()
 cur = None
