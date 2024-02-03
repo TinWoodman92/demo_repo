@@ -1,6 +1,7 @@
 import os
 from random import *
 from sqlite3 import *
+import getpass
 
 
 if not os.path.isfile(os.path.join(os.getcwd(), 'sexy.db')):
@@ -12,13 +13,21 @@ con = connect('sexy.db')
 cur = con.cursor()
 
 if chk_1:
-	cur.execute("CREATE TABLE sexy_tbl (chk INTEGER);")
+	cur.execute("CREATE TABLE sexy_tbl (username TEXT, chk INTEGER);")
 
 chk_2 = randint(0,1)
-cur.execute("INSERT INTO sexy_tbl (chk) VALUES(:chk);", {"chk" : chk_2})
+username = getpass.getuser()
+param = {"username" : username, "chk" : chk_2}
+
+cur.execute("INSERT INTO sexy_tbl (username, chk) VALUES(:username, :chk);", param)
 
 k = []
-res = cur.execute("SELECT sum(chk) as sum_chk, count(chk) as count_chk FROM sexy_tbl;")
+res = cur.execute('''
+	SELECT sum(chk) as sum_chk, count(chk) as count_chk 
+	FROM sexy_tbl
+	WHERE username = :username;''',
+	param)
+
 for desc in cur.description: k.append(desc[0])
 row = res.fetchone()
 rcd = dict(zip(k,row))
